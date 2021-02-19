@@ -2,9 +2,14 @@ import cv2
 import sys
 import os
 
+def drawProgressBar(percent, barLen = 20):
+    # percent float from 0 to 1.
+    sys.stdout.write("\r")
+    sys.stdout.write("[{:<{}}] {:.0f}%".format("=" * int(barLen * percent), barLen, percent * 100))
+    sys.stdout.flush()
+
 def createPath(dirToBeCreated):
     if not os.path.exists(dirToBeCreated):
-        print(dirToBeCreated)
         try:
             os.makedirs(dirToBeCreated)
         except OSError as exc: # Guard against race condition
@@ -18,12 +23,13 @@ if len(sys.argv) != 3:
 
 file_path = sys.argv[1]
 dest_dir = sys.argv[2].rstrip('/')
-print(dest_dir)
 createPath(dest_dir)
 
 # Opens the Video file
 cap= cv2.VideoCapture(file_path)
+number_of_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 i=0
+cur_frame = 1
 while(cap.isOpened()):
     ret, frame = cap.read()
     if ret == False:
@@ -36,10 +42,12 @@ while(cap.isOpened()):
         else:
             i+=1
             dest_file = dest_dir+'/frame'+str(i)+'.jpg'
-
+    drawProgressBar((cur_frame/number_of_frames))
+    cur_frame+=1
     cv2.imwrite(dest_dir+'/frame'+str(i)+'.jpg', frame)
     i+=1
- 
+print("\nFinished")
+
 cap.release()
 cv2.destroyAllWindows()
 
