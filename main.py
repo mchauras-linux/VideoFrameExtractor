@@ -21,6 +21,8 @@ def generate_frames(file_path, dest_dir):
     print("\nProcessing File: " + file_path)
     # Opens the Video file
     cap= cv2.VideoCapture(file_path)
+    fps = round(cap.get(cv2.CAP_PROP_FPS))
+    print(f'Frame Rate: {fps}fps')
     number_of_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     i=0
     cur_frame = 1
@@ -40,7 +42,7 @@ def generate_frames(file_path, dest_dir):
         cur_frame+=1
         cv2.imwrite(dest_dir+'/frame'+str(i)+'.jpg', frame)
         i+=1
-    print("\nFinished")
+    print(f'\nFinished: {cur_frame} Frames generated')
 
     cap.release()
     cv2.destroyAllWindows()
@@ -51,7 +53,7 @@ def main():
         exit()
 
     file_path = sys.argv[1]
-    dest_dir = sys.argv[2].rstrip('/')
+    dest_dir = sys.argv[2].rstrip('/') + "/Frames"
     if os.path.isdir(file_path):
         #Iterating Recursively through the source path
         for root, dirs, files in os.walk(file_path):
